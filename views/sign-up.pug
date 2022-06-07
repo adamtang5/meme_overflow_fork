@@ -17,6 +17,6 @@ block content
                 label(for="confirmPassword") Confirm Password:
                 input(type="password" name="confirmPassword" id="confirmPassword" required)
             +errorBlock(errors)
-            button(type="submit") Sign Up
+            button.button(type="submit") Sign Up
         #redirect
             p: a(href="/login") Already have an account?

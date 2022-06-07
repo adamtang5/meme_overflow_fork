@@ -12,9 +12,9 @@ block content
                 label(for="password") Password:
                 input(type="password" name="password" id="password" required)
             +errorBlock(errors)
-            button(type="submit") Log In
+            button.button(type="submit") Log In
         form(action="/login-demo" method="post")
             input(type="hidden" name="_csrf" value=csrfToken)
-            button(type="submit" class="demo-user-button") Demo User
+            button.button(type="submit" class="demo-user-button") Demo User
         #redirect
             p: a(href="/signup") Don't have an account?
