@@ -45,9 +45,25 @@ const restoreUser = async (req, res, next) => {
     }
 };
 
+const checkSessionUser = (req, res, next) => {
+    if (req.session.auth) {
+        req.renderOptions = {
+            isLoggedIn: true,
+            sessionUser: res.locals.user,
+        };
+    } else {
+        req.renderOptions = {
+            isLoggedIn: false,
+            sessionUser: undefined,
+        };
+    }
+    next();
+};
+
 module.exports = {
     loginUser,
     restoreUser,
     logoutUser,
     requireAuth,
+    checkSessionUser,
 };
