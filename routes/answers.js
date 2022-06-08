@@ -1,40 +1,41 @@
 const express = require('express')
 const router = express.Router()
-const { requireAuth } = require('../auth')
+const { requireAuth, checkSessionUser } = require('../auth')
 const db = require('../db/models')
 const { check, validationResult } = require('express-validator')
 const { asyncHandler, handleValidationErrors, csrfProtection } = require('../utils')
-// const { route } = require('.')
-//const modal = document.getElementById("modal")
-
-
 
 
 const answerValidators = [
     check('memeUrl')
         .exists({ checkFalsy: true })
         .withMessage('Please put a meme for the answer')
-]
+];
+
+
 const commentValidators = [
     check('content')
         .exists({ checkFalsy: true })
         .withMessage('Please put a content for the content')
-]
+];
 
-router.get('/', asyncHandler(async (req, res) => {
-    const answers = await db.Answer.findAll({
-        include: db.Comment,
-        order: [["createdAt", "DESC"]]
 
-    })
-    res.render("./answers/answer", { answers })
-}))
+// router.get('/', asyncHandler(async (req, res) => {
+//     const answers = await db.Answer.findAll({
+//         include: db.Comment,
+//         order: [["createdAt", "DESC"]]
 
+//     })
+//     res.render("./answers/answer", { answers })
+// }));
+
+
+// Non-standard route -- need to find where this route is invoked
 router.post('/:answerId', requireAuth, commentValidators, csrfProtection, asyncHandler(async (req, res) => {
     //console.log("IN ANSWER POST ROUTE ======================================================")
     //parse in the string of the questionId into integer
-    const answerId = parseInt(req.params.answerId)
-    const answerBuild = await db.Answer.findByPk(answerId)
+    const answerId = parseInt(req.params.answerId);
+    const answerBuild = await db.Answer.findByPk(answerId);
     const { content } = req.body
     const { userId } = req.session.auth;
     //console.log(userId,"USER")
@@ -343,7 +344,7 @@ router.post('/:answerId(\\d+)/downvote', requireAuth, asyncHandler(async (req, r
     });
     const newVoteCount = updatedAnswer.Upvotes.length - updatedAnswer.Downvotes.length;
     res.json({ voteCount: newVoteCount });
-}
-))
+}));
+
 
 module.exports = router;

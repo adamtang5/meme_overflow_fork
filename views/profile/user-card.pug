@@ -1,0 +1,15 @@
+include ../avatar.pug
+
+mixin userCard(user)
+    #avatar
+        +avatar(user, 'fa-6x', false)
+    #user-info
+        .username= user.username
+        .user-since User Since: #{user.createdAt.toISOString().split('T')[0]}
+        .user-likes
+            .point-icon
+                i.fa-solid.fa-fire.fa-1x
+            .point-value= user.maxLikes
+            .like-icon
+                i.fa-regular.fa-thumbs-up.fa-1x
+            .current-likes-value= user.currentLikes

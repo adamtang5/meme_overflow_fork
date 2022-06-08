@@ -76,7 +76,7 @@ router.get(
       csrfToken: req.csrfToken(),
     }
 
-    res.render('profile', req.renderOptions)
+    res.render('profile/profile', req.renderOptions)
   }));
 
 
