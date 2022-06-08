@@ -1,10 +1,9 @@
+include avatar.pug
+
 if isLoggedIn
-    #avatar: a(href="/profile")
-        if sessionUser.avatarUrl
-            img(src=sessionUser.avatarUrl, alt=sessionUser.username)
-        else
-            //- Source of icon design: https://fontawesome.com/v5/icons/user-circle?s=regular
-            img.default-avatar(src="/icons/user-circle-regular.svg", alt=sessionUser.username)
+    #user-badge.flex-column
+        #avatar
+            +avatar(sessionUser, 'fa-5x')
         .username @#{sessionUser.username}
         .user-since User Since: #{sessionUser.createdAt.toISOString().split('T')[0]}
     #greeting

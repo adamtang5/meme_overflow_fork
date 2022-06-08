@@ -2,22 +2,21 @@ var express = require('express');
 var router = express.Router();
 const db = require("../db/models");
 const { asyncHandler, csrfProtection, styleResources, isAuthorized } = require("../utils");
-const { requireAuth } = require('../auth');
+const { requireAuth, checkSessionUser } = require('../auth');
 const { check, validationResult } = require('express-validator');
 /* GET users listing. */
 
-router.get('/', function (req, res, next) {
-  res.send('respond with a resource');
-});
+// router.get('/', function (req, res, next) {
+//   res.send('respond with a resource');
+// });
 
 router.get(
   '/:userId(\\d+)/profile',
   requireAuth,
+  checkSessionUser,
   csrfProtection,
   asyncHandler(async (req, res) => {
-    const userId = req.params.userId;
-
-
+    const userId = parseInt(req.params.userId, 10);
 
     const user = await db.User.findByPk(userId, {
       include: [
@@ -67,16 +66,17 @@ router.get(
     styleResources(answers, 5);
     styleResources(comments, 5);
 
-    res.render('profile', {
+    req.renderOptions = {
+      ...req.renderOptions,
       title: `${user.username}'s Profile`,
       user,
       questions: user.Questions.slice(0, 3),
       answers,
       comments,
       csrfToken: req.csrfToken(),
-      isLoggedIn: req.session.auth,
-      sessionUser: res.locals.user ? res.locals.user : undefined,
-    })
+    }
+
+    res.render('profile', req.renderOptions)
   }));
 
 router.get(`/:userId(\\d+)/questions`, csrfProtection, asyncHandler(async (req, res) => {

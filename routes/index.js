@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 const { User, Question, Answer } = require("../db/models");
 const { check, validationResult } = require("express-validator")
 const { asyncHandler, csrfProtection, isAuthorized, styleResources } = require("../utils")
-const { loginUser, logoutUser, requireAuth } = require('../auth');
+const { loginUser, logoutUser, requireAuth, restoreUser, checkSessionUser } = require('../auth');
 
 const userValidators = [
   check('username')
@@ -49,6 +49,8 @@ const userValidators = [
 /* GET home page. */
 router.get(
   '/',
+  restoreUser,
+  checkSessionUser,
   asyncHandler(async (req, res) => {
     const questions = await Question.findAll({
       include: [Answer, User],
@@ -63,13 +65,15 @@ router.get(
       });
     }
 
-    res.render('index', {
+    req.renderOptions = {
+      ...req.renderOptions,
       title: 'Meme Overflow',
       questions,
-      isLoggedIn: req.session.auth,
-      sessionUser: res.locals.user ? res.locals.user : undefined,
-    });
+    }
+
+    res.render('index', req.renderOptions);
   }));
+
 
 router.get(
   "/signup",
@@ -84,6 +88,7 @@ router.get(
       isLoggedIn: res.locals.authenticated,
     })
   }));
+
 
 router.post(
   "/signup",
@@ -117,6 +122,7 @@ router.post(
     }
   }));
 
+
 router.get(
   "/login",
   csrfProtection,
@@ -130,6 +136,7 @@ router.get(
     });
   }));
 
+
 const loginValidators = [
   check('email')
     .exists({ checkFalsy: true })
@@ -138,6 +145,7 @@ const loginValidators = [
     .exists({ checkFalsy: true })
     .withMessage('Please provide a value for Password'),
 ];
+
 
 router.post(
   "/login",
@@ -180,13 +188,16 @@ router.post(
     });
   }));
 
+
 router.post('/login-demo', csrfProtection, asyncHandler(async (req, res) => {
   const user = await User.findByPk(1);
 
   return loginUser(req, res, user);
 }));
 
+
 router.post("/logout", (req, res) => logoutUser(req, res));
+
 
 router.get("/profile", requireAuth, (req, res) => {
   const sessionUser = res.locals.user;

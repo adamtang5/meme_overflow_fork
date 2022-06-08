@@ -1,0 +1,6 @@
+if isLoggedIn
+    form(action="/logout" method="post")
+        #logout: button.button(type="submit") Log Out
+else
+    #login: a(href="/login"): button.button Log In
+    #sign-up: a(href="/signup"): button.button Sign Up

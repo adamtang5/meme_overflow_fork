@@ -13,27 +13,7 @@ html
   body
     header
       nav#top-nav
-        #logo
-          a(href="/")
-            //- Source of icon design: https://fontawesome.com/v5/icons/images?s=regular, https://fontawesome.com/icons/face-grin-squint-tears?s=regular
-            img(src="/icons/meme-overflow-icon.svg", alt="Meme Overflow")
-          a(href="/")
-            h1 MemeOverflow
-        #search-bar
-          form(action="/search", method="get")
-            input(type="text" name="search_keyword" id="search_keyword" required)
-            button.button(type="submit") Search
-            //a(href=`/search/:search_keyword`): button Search
-            //how to link input to the form
-            //how to get rid of the "?"
-
-        #auth-buttons
-          if isLoggedIn
-            form(action="/logout" method="post")
-              #logout: button.button(type="submit") Log Out
-          else
-            #login: a(href="/login"): button.button Log In
-            #sign-up: a(href="/signup"): button.button Sign Up
+        include nav.pug
     main
       #left-column
         include left-column.pug
