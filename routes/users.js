@@ -79,58 +79,83 @@ router.get(
     res.render('profile', req.renderOptions)
   }));
 
-router.get(`/:userId(\\d+)/questions`, csrfProtection, asyncHandler(async (req, res) => {
-  const userId = parseInt(req.params.userId, 10);
-  const user = await db.User.findByPk(userId);
-  const questions = await db.Question.findAll({
-    where: {
-      userId,
-    },
-    include: [db.User],
-  });
 
-  styleResources(questions, 5);
-
-  if (req.session.auth) {
-    questions.forEach((question) => {
-      question.isAuthorized = isAuthorized(req, res, question);
+router.get(`/:userId(\\d+)/questions`,
+  csrfProtection,
+  checkSessionUser,
+  asyncHandler(async (req, res) => {
+    const userId = parseInt(req.params.userId, 10);
+    const user = await db.User.findByPk(userId);
+    const questions = await db.Question.findAll({
+      where: {
+        userId,
+      },
+      include: [db.User],
     });
-  }
 
-  res.render('index', {
-    title: `${user.username}'s Questions`,
-    questions,
-    isLoggedIn: req.session.auth,
-    sessionUser: res.locals.user ? res.locals.user : undefined,
-  })
+    styleResources(questions, 5);
 
-}));
+    if (req.session.auth) {
+      questions.forEach((question) => {
+        question.isAuthorized = isAuthorized(req, res, question);
+      });
+    }
 
-router.get(`/:userId(\\d+)/answers`, csrfProtection, asyncHandler(async (req, res) => {
-  const user = parseInt(req.params.userId, 10);
-  console.log(user, "USER")
-  const answers = await db.Answer.findAll({
-    where: {
-      userId: user
-    },
-    include: [db.User, db.Comment]
-  })
-  console.log(answers, "Question")
-  res.render('./answers/answer', { answers })
-}));
+    req.renderOptions = {
+      ...req.renderOptions,
+      title: `${user.username}'s Questions`,
+      questions,
+    };
+
+    res.render('index', req.renderOptions);
+  }));
 
 
-router.get(`/:userId(\\d+)/comments`, csrfProtection, asyncHandler(async (req, res) => {
-  const user = parseInt(req.params.userId, 10);
-  console.log(user, "USER")
-  const comments = await db.Comment.findAll({
-    where: {
-      userId: user
-    },
-    include: [db.User, db.Answer]
-  })
+router.get(`/:userId(\\d+)/answers`,
+  csrfProtection,
+  checkSessionUser,
+  asyncHandler(async (req, res) => {
+    const user = parseInt(req.params.userId, 10);
+    // console.log(user, "USER")
+    const answers = await db.Answer.findAll({
+      where: {
+        userId: user
+      },
+      include: [db.User, db.Comment]
+    })
+    // console.log(answers, "Question")
 
-  console.log(comments, "Question")
-  res.render('./comments/comment', { comments })
-}));
+    req.renderOptions = {
+      ...req.renderOptions,
+      answers,
+    };
+
+    res.render('./answers/answer', req.renderOptions);
+  }));
+
+
+router.get(`/:userId(\\d+)/comments`,
+  csrfProtection,
+  checkSessionUser,
+  asyncHandler(async (req, res) => {
+    const user = parseInt(req.params.userId, 10);
+    // console.log(user, "USER")
+    const comments = await db.Comment.findAll({
+      where: {
+        userId: user
+      },
+      include: [db.User, db.Answer]
+    })
+
+    // console.log(comments, "Question")
+
+    req.renderOptions = {
+      ...req.renderOptions,
+      comments,
+    };
+
+    res.render('./comments/comment', req.renderOptions);
+  }));
+
+
 module.exports = router;
