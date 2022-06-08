@@ -1,0 +1,61 @@
+#prominent.top {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-end;
+    gap: 10px;
+    line-height: 50px;
+}
+
+#prominent.top #logo>img {
+    width: 100px;
+    height: 100px;
+}
+
+#prominent.top h1 {
+    font-size: 48px;
+    font-weight: bolder;
+    color: #ff6c37;
+    align-self: center;
+    letter-spacing: -4px;
+}
+
+/* Top Nav Styles */
+#top-nav {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+}
+
+#top-nav #logo {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-end;
+    gap: 5px;
+}
+
+#top-nav #logo h1 {
+    font-size: 40px;
+    font-weight: bolder;
+    color: #ff6c37;
+    align-self: center;
+    letter-spacing: -4px;
+    padding-bottom: 10px;
+}
+
+#logo img {
+    width: 48px;
+    height: 62px;
+    filter: invert(71%) sepia(62%) saturate(5581%) hue-rotate(337deg) brightness(101%) contrast(102%);
+}
+
+
+#auth-buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+
+}
