@@ -1,0 +1,34 @@
+extends ../layout.pug
+include ../utils.pug
+include user-card.pug
+block append head
+  //- add page specific styles by appending to the head
+  link(rel="stylesheet" href="/stylesheets/index.css")
+  //- add page specific js
+  // script(src="/javascripts/index.js" type="module")
+block content
+  #user-card
+    +userCard(user)
+    //- #avatar
+    //-   +avatar(user, 'fa-6x', false)
+    //- #user-info
+    //-   .username= user.username
+    //-   .user-since User Since: #{user.createdAt.toISOString().split('T')[0]}
+    //-   .user-likes
+    //-     .point-icon
+    //-       i.fa-solid.fa-fire.fa-1x
+    //-       //- +fireIcon("#000000")
+    //-     .point-value= user.maxLikes
+    //-     .like-icon
+    //-       i.fa-regular.fa-thumbs-up.fa-1x
+    //-       //- +likeIcon("#000000")
+    //-     .current-likes-value= user.currentLikes
+  h2 My Questions
+  #questions-container
+    +questionSamples(questions)
+  h2 My Answers
+  #answers-container
+    //- +answerSamples(answers)
+  h2 My Comments
+  #comments-container
+    //- +commentSamples(comments)

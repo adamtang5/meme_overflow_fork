@@ -13,7 +13,7 @@ mixin questionForm(action)
             label(for="description") Description:
             textarea(name="description" id="description" rows="3" required)= question.description
             div
-                button(type="submit" id="submit-question-form") Submit
+                button.button(type="submit" id="submit-question-form") Submit
                 a(href=`/` id="cencel-btn-edit-q") Cancel
 
 mixin authorAvatar(avatarUrl, username)
