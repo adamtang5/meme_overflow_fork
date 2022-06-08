@@ -1,0 +1,21 @@
+#prominent.top {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-end;
+    gap: 10px;
+    line-height: 50px;
+}
+
+#prominent.top #logo>img {
+    width: 100px;
+    height: 100px;
+}
+
+#prominent.top h1 {
+    font-size: 48px;
+    font-weight: bolder;
+    color: var(--color-primary);
+    align-self: center;
+    letter-spacing: -4px;
+}
