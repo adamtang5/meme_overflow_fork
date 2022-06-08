@@ -3,24 +3,26 @@ const router = express.Router();
 const db = require("../db/models");
 const { check, validationResult } = require('express-validator');
 const { asyncHandler, csrfProtection, isAuthorized } = require("../utils");
-const { requireAuth } = require('../auth');
+const { requireAuth, checkSessionUser } = require('../auth');
 
-router.get('/new', requireAuth, csrfProtection, asyncHandler(async (req, res) => {
+router.get('/new', requireAuth, checkSessionUser, csrfProtection, asyncHandler(async (req, res) => {
     const question = await db.Question.build();
 
     if (!res.locals.authenticated) {
         return res.redirect('/login');
     }
 
-    res.render('questions/question-form', {
+    req.renderOptions = {
+        ...req.renderOptions,
         title: 'Ask A Question',
         question,
         csrfToken: req.csrfToken(),
-        isLoggedIn: res.locals.authenticated,
-        sessionUser: res.locals.user ? res.locals.user : undefined,
-        action: `/questions/new`
-    });
+        action: `/questions/new`,
+    };
+
+    res.render('questions/question-form', req.renderOptions);
 }));
+
 
 const questionValidators = [
     check('title')
@@ -31,7 +33,8 @@ const questionValidators = [
         .withMessage('Please provide a value for description'),
 ];
 
-router.post('/new', requireAuth, csrfProtection, questionValidators, asyncHandler(async (req, res) => {
+
+router.post('/new', requireAuth, checkSessionUser, csrfProtection, questionValidators, asyncHandler(async (req, res) => {
     const { title, description } = req.body;
     const { userId } = req.session.auth;
 
@@ -48,13 +51,16 @@ router.post('/new', requireAuth, csrfProtection, questionValidators, asyncHandle
         res.redirect('/');
     } else {
         const errors = validatorErrors.array().map((err) => err.msg);
-        res.render('questions/question-form', {
+
+        req.renderOptions = {
+            ...req.renderOptions,
             title: 'Ask A Question',
             question,
-            isLoggedIn: res.locals.authenticated,
             csrfToken: req.csrfToken(),
             errors,
-        });
+        };
+
+        res.render('questions/question-form', req.renderOptions);
     }
 }));
 
@@ -62,6 +68,7 @@ router.post('/new', requireAuth, csrfProtection, questionValidators, asyncHandle
 router.get(
     '/:questionId(\\d+)',
     csrfProtection,
+    checkSessionUser,
     asyncHandler(async (req, res) => {
         const id = parseInt(req.params.questionId, 10);
         const question = await db.Question.findByPk(id, {
@@ -111,20 +118,23 @@ router.get(
             }
         }
 
-        res.render('questions/question-display.pug', {
+        req.renderOptions = {
+            ...req.renderOptions,
             title: question.title,
             question,
             answers: question.Answers,
             comments: question.Answers.Comments,
-            isLoggedIn: res.locals.authenticated,
-            sessionUser: res.locals.user ? res.locals.user : undefined,
             csrfToken: req.csrfToken(),
-        });
+        };
+
+        res.render('questions/question-display.pug', req.renderOptions);
     }));
+
 
 router.post(
     '/:questionId(\\d+)',
     requireAuth,
+    checkSessionUser,
     csrfProtection,
     asyncHandler(async (req, res) => {
         const questionId = parseInt(req.params.questionId, 10);
@@ -143,29 +153,30 @@ router.post(
         const validatorErrors = validationResult(req);
 
         if (validatorErrors.isEmpty()) {
-            console.log("CHECK HERE ---------------------")
+            // console.log("CHECK HERE ---------------------")
             await answer.save()
             res.redirect(`/questions/${question.id}`);
         } else {
-            console.log("LOOK HERE +++++++++++++++")
+            // console.log("LOOK HERE +++++++++++++++")
             const errors = validatorErrors.array().map((err) => err.msg);
-            res.render('./questions/question-display', {
+
+            req.renderOptions = {
+                ...req.renderOptions,
                 title,
                 memeUrl,
                 errors,
                 csrfToken: req.csrfToken()
-            });
+            };
+
+            res.render('./questions/question-display', req.renderOptions);
         }
     }));
-
-
-
-
 
 
 router.get(
     '/:questionId(\\d+)/edit',
     requireAuth,
+    checkSessionUser,
     csrfProtection,
     asyncHandler(async (req, res) => {
         const id = parseInt(req.params.questionId, 10);
@@ -180,22 +191,23 @@ router.get(
             return res.redirect('/');
         }
 
-        res.render('questions/question-form', {
+        req.renderOptions = {
+            ...req.renderOptions,
             title: 'Edit Question',
             question,
             csrfToken: req.csrfToken(),
-            isLoggedIn: res.locals.authenticated,
-            sessionUser: res.locals.user ? res.locals.user : undefined,
             action: `/questions/${id}/edit`
-        });
+        };
+
+        res.render('questions/question-form', req.renderOptions);
     }));
 
-router.post('/:questionId(\\d+)/edit', requireAuth, csrfProtection, questionValidators, asyncHandler(async (req, res) => {
+
+router.post('/:questionId(\\d+)/edit', requireAuth, checkSessionUser, csrfProtection, questionValidators, asyncHandler(async (req, res) => {
     const { title, description } = req.body;
     const { userId } = req.session.auth;
     const questionId = parseInt(req.params.questionId, 10)
     const question = await db.Question.findByPk(questionId)
-
 
     const validatorErrors = validationResult(req);
 
@@ -204,26 +216,29 @@ router.post('/:questionId(\\d+)/edit', requireAuth, csrfProtection, questionVali
             title,
             description,
             userId,
-
         });
 
         res.redirect('/');
     } else {
         const errors = validatorErrors.array().map((err) => err.msg);
-        res.render('questions/question-form', {
+
+        req.renderOptions = {
+            ...req.renderOptions,
             title: 'Ask A Question',
             question,
             csrfToken: req.csrfToken(),
             errors,
-            isLoggedIn: res.locals.authenticated,
-            sessionUser: res.locals.user ? res.locals.user : undefined,
-        });
+        };
+
+        res.render('questions/question-form', req.renderOptions);
     }
 }));
+
 
 router.get(
     '/:questionId(\\d+)/delete',
     requireAuth,
+    checkSessionUser,
     csrfProtection,
     asyncHandler(async (req, res) => {
         const id = parseInt(req.params.questionId, 10);
@@ -238,18 +253,21 @@ router.get(
             return res.redirect('/');
         }
 
-        res.render('questions/question-delete', {
+        req.renderOptions = {
+            ...req.renderOptions,
             title: 'Delete Question',
             question,
             csrfToken: req.csrfToken(),
-            isLoggedIn: res.locals.authenticated,
-            sessionUser: res.locals.user ? res.locals.user : undefined,
-        });
+        };
+
+        res.render('questions/question-delete', req.renderOptions);
     }));
+
 
 router.post(
     '/:questionId(\\d+)/delete',
     requireAuth,
+    // checkSessionUser,
     csrfProtection,
     asyncHandler(async (req, res) => {
         const id = parseInt(req.params.questionId, 10);
