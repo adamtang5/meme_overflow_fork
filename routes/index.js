@@ -3,7 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const { User, Question, Answer } = require("../db/models");
 const { check, validationResult } = require("express-validator")
-const { asyncHandler, csrfProtection, isAuthorized, styleResources } = require("../utils")
+const { asyncHandler, csrfProtection, isAuthorized, styleResources, loadCreators } = require("../utils")
 const { loginUser, logoutUser, requireAuth, restoreUser, checkSessionUser } = require('../auth');
 
 const userValidators = [
@@ -51,6 +51,7 @@ router.get(
   '/',
   restoreUser,
   checkSessionUser,
+  loadCreators,
   asyncHandler(async (req, res) => {
     const questions = await Question.findAll({
       include: [Answer, User],

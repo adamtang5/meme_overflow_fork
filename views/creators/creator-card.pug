@@ -1,0 +1,6 @@
+mixin creatorCard(creator)
+    a(href=creator.github_url target="_blank")
+        .creator-card.flex-column
+            .creator-avatar
+                img(src=creator.avatar_url, alt=`${creator.first_name} ${creator.last_name}`)
+            .creator-name-tag #{creator.first_name} #{creator.last_name}

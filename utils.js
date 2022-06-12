@@ -1,5 +1,6 @@
 const { check, validationResult } = require('express-validator');
 const csrf = require("csurf");
+const creators = require('./creators.json');
 
 const csrfProtection = csrf({ cookie: true });
 
@@ -33,7 +34,15 @@ const styleResources = (resources, size) => {
     resources.forEach((resource, i) => {
         resource.colorIndex = i % size;
     });
-}
+};
+
+const loadCreators = async (req, res, next) => {
+    req.renderOptions = {
+        ...req.renderOptions,
+        creators,
+    };
+    next();
+};
 
 module.exports = {
     asyncHandler,
@@ -41,4 +50,5 @@ module.exports = {
     csrfProtection,
     isAuthorized,
     styleResources,
+    loadCreators,
 };
