@@ -3,9 +3,13 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "render-postbuild": "npm num build",
+    "sequelize": "sequelize",
+    "sequelize-cli": "sequelize-cli",
     "start": "per-env",
     "start:development": "nodemon -r dotenv/config ./bin/www",
-    "start:production": "node ./bin/www"
+    "start:production": "node ./bin/www",
+    "build": "echo 'Building....'"
   },
   "dependencies": {
     "aws-sdk": "^2.1149.0",
