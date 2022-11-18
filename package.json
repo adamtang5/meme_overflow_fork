@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "render-postbuild": "npm num build",
+    "render-postbuild": "npm run build",
     "sequelize": "sequelize",
     "sequelize-cli": "sequelize-cli",
     "start": "per-env",
